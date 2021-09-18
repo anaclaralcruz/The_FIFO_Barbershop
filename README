@@ -1,0 +1,17 @@
+Autora: Ana Clara Loureiro Cruz
+UFRJ - DEL - ENGENHARIA ELETRONICA E DE COMPUTACAO
+Trabalho de Sistemas Operacionais
+Programa feito em C
+
+------------------- PROJETO PARA GERIR THREADS COMO SE FOSSE UMA BARBEARIA -----------------------------
+
+Este programa tem como objetivo resolver o problema "The FIFO Barbershop" apresentado no livro
+'https://greenteapress.com/semaphores/LittleBookOfSemaphores.pdf' utilizando a biblioteca <pthread.h>
+
+
+--------------------------------------- MANUAL DO PROGRAMA ---------------------------------------------
+
+ULTILIZACAO
+    - Abrir pasta
+    - Compilar e linkeditar o programa usando o comando "make"
+    - Inicializar o executavel "./main"

@@ -15,16 +15,11 @@
 // Variaveis globais
 long unsigned int fila[QUANTIDADE_DE_CLIENTES];
 int contadorInsercao=0;
-int contadorBarbeiro=0;
 int clientes=0;
 
 // Inicializacao do mutex
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t barbeiroLivre = PTHREAD_COND_INITIALIZER;
-pthread_cond_t barbeiroPronto = PTHREAD_COND_INITIALIZER;
-pthread_cond_t clienteLivre = PTHREAD_COND_INITIALIZER;
-pthread_cond_t clientePronto = PTHREAD_COND_INITIALIZER;
-pthread_cond_t usouOLock = PTHREAD_COND_INITIALIZER;
 
 
 int cutHair(long unsigned int clienteId) {
@@ -32,6 +27,7 @@ int cutHair(long unsigned int clienteId) {
     return OK;
 }
 
+// Quando o cliente encontra a sala de espera cheia ele vai embora
 void vazar() {
     printf("Todos os assentos ocupados, cliente id = %ld saindo da loja.\n", pthread_self());
 }
@@ -48,19 +44,14 @@ void *cliente(void *arg) {
         // Cliente entra na fila
         fila[contadorInsercao] = pthread_self();
         contadorInsercao++;
-
     pthread_mutex_unlock(&mutex);
-
-    // Acordar o barbeiro ou esperar ele estar livre
-    pthread_cond_signal(&clientePronto);
 
     // Cortar o cabelo
 
-    // Avisar que o cliente terminou
-    
-    printf("Esperando o barbeiro ficar livre\n");
+    // Esperar o cabelereiro terminar
     pthread_cond_wait(&barbeiroLivre,&mutex);
 
+    // Confirmar o corte
     pthread_mutex_lock(&mutex);
         clientes -= 1;
     pthread_mutex_unlock(&mutex);
@@ -69,18 +60,24 @@ void *cliente(void *arg) {
 }
 
 void *barbeiro(void *arg) {
+    // Avisar que acordou
     pthread_cond_signal(&barbeiroLivre);
-    for (int i; i<QUANTIDADE_DE_CLIENTES; i++) {
-    //    printf("Esperando o cliente ficar pronto\n");
-    //    pthread_cond_wait(&clientePronto,&mutex);
 
-        pthread_mutex_lock(&mutex);
-            long unsigned int clienteDaVez = fila[i];
-            cutHair(clienteDaVez);
-        pthread_mutex_unlock(&mutex);
+    // Cortar o cabelo na ordem em que os clientes chegam
+    for (int i; i<QUANTIDADE_DE_CLIENTES; i++) {
+
+        // Evitar chamar uma posicao que ainda nao chegou
+        if (fila[i])
+            cutHair(fila[i]);
+        while (fila[i]==0) {
+            if (fila[i])
+                cutHair(fila[i]);
+        }
+        // Avisar que esta pronto para cortar outro cabelo
         pthread_cond_signal(&barbeiroLivre);
     }
-    
+    pthread_cond_signal(&barbeiroLivre);
+    printf("\nNao ha mais clientes, Barbearia fechou.\n");
     return NULL;
 }
 
@@ -92,6 +89,5 @@ int main() {
     }
     pthread_create(&barb, NULL, barbeiro, NULL);
     pthread_join(barb,NULL);
-    pthread_join(client,NULL);
-    return 0;
+    return OK;
 }

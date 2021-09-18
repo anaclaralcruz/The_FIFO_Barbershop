@@ -1,31 +1,15 @@
-#CC = g++
-#CFLAGS = -Wall
-#LDFLAGS = -pthread
+# Autora: Ana Clara Loureiro Cruz
+# Data: 17-09-2021
 
-#OBJS = main.o
-#EXECS = trabalho2
-#ALL = $(EXECS)
+#  TRABALHO 2 - SISTEMAS OPERACIONAIS
 
-#all: $(ALL)
-
-#.c.o:
-#	$(CC) $(CFLAGS) -c $<
-
-#$(EXECS): $(OBJS)
-#	$(CC) $(CFLAGS) -o trabalho2 $(OBJS)
-
-#clean:
-#	rm -f *.o trabalho2
-
-# the compiler
+# Compilador
 CC = gcc
 
-# compiler flags:
-#  -Wall turns on most, but not all, compiler warnings
+# Flags:
 CFLAGS  = -Wall -Werror -D_POSIX_THREAD_SEMANTICS
 LDFLAGS = -pthread
 
-# the build target executable:
 TARGET = main
 
 all: $(TARGET)
