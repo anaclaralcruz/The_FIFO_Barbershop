@@ -52,13 +52,13 @@ void *cliente(void *arg) {
     pthread_mutex_unlock(&mutex);
 
     // Acordar o barbeiro ou esperar ele estar livre
-    pthread_cond_wait(&barbeiroPronto, &mutex);
     pthread_cond_signal(&clientePronto);
 
     // Cortar o cabelo
 
     // Avisar que o cliente terminou
-    pthread_cond_signal(&clienteLivre);
+    
+    printf("Esperando o barbeiro ficar livre\n");
     pthread_cond_wait(&barbeiroLivre,&mutex);
 
     pthread_mutex_lock(&mutex);
@@ -69,34 +69,28 @@ void *cliente(void *arg) {
 }
 
 void *barbeiro(void *arg) {
-
-    pthread_cond_signal(&barbeiroPronto);
-    printf("Barbeiro pronto\n");
-    pthread_cond_wait(&clientePronto,&mutex);
-    printf("Cliente pronto\n");
-
-    pthread_mutex_lock(&mutex);
-        long unsigned int clienteDaVez = fila[contadorBarbeiro];
-        contadorBarbeiro++;
-    pthread_mutex_unlock(&mutex);
-
-    cutHair(clienteDaVez);
-
-    pthread_cond_wait(&clienteLivre,&mutex);
     pthread_cond_signal(&barbeiroLivre);
+    for (int i; i<QUANTIDADE_DE_CLIENTES; i++) {
+    //    printf("Esperando o cliente ficar pronto\n");
+    //    pthread_cond_wait(&clientePronto,&mutex);
 
+        pthread_mutex_lock(&mutex);
+            long unsigned int clienteDaVez = fila[i];
+            cutHair(clienteDaVez);
+        pthread_mutex_unlock(&mutex);
+        pthread_cond_signal(&barbeiroLivre);
+    }
+    
     return NULL;
 }
 
 int main() {
     pthread_t barb,client;
-    
+
     for (int i=0; i<QUANTIDADE_DE_CLIENTES; i++) {
         pthread_create(&client, NULL, cliente, NULL); 
     }
     pthread_create(&barb, NULL, barbeiro, NULL);
-    printf("Criou o barbeiro\n");
-
     pthread_join(barb,NULL);
     pthread_join(client,NULL);
     return 0;
