@@ -15,3 +15,9 @@ ULTILIZACAO
     - Abrir pasta
     - Compilar e linkeditar o programa usando o comando "make"
     - Inicializar o executavel "./main"
+
+
+--------------------------------- OBSERVACOES IMPORTANTES ---------------------------------------------
+
+    [OBS.: Ha alguns casos em que eh possivel identificar deadlocks, mas na maioria das vezes funciona]
+    [OBS2.: O programa foi testado no Windows Subsystem for Linux (WSL2) usando a distribuicao ubuntu]
